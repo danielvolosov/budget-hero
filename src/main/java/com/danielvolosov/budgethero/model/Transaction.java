@@ -3,6 +3,7 @@ package com.danielvolosov.budgethero.model;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -15,7 +16,7 @@ public class Transaction {
     private int transactionId;
 
     @Column(name = "TOTAL", columnDefinition = "DECIMAL(12,2)")
-    private int total;
+    private BigDecimal total;
 
     @Nullable
     @Column(name = "DESCRIPTION", columnDefinition = "VARCHAR(250)")
@@ -24,11 +25,11 @@ public class Transaction {
     @Column(name = "DATE_OF_TRANSACTION", columnDefinition = "DATE DEFAULT CURRENT_DATE")
     private Date dateOfTransaction = new Date();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="CATEGORY_ID")
     private Category category;
 
-    public Transaction(int transactionId, int total, String description, Date dateOfTransaction, Category category) {
+    public Transaction(int transactionId, BigDecimal total, String description, Date dateOfTransaction, Category category) {
         this.transactionId = transactionId;
         this.total = total;
         this.description = description;
@@ -47,11 +48,11 @@ public class Transaction {
         this.transactionId = transactionId;
     }
 
-    public int getTotal() {
+    public BigDecimal getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(BigDecimal total) {
         this.total = total;
     }
 
