@@ -14,7 +14,7 @@ public class Transaction {
     @Column(name = "TRANSACTION_ID", columnDefinition = "INTEGER")
     private int transactionId;
 
-    @Column(name = "TOTAL", columnDefinition = "MONEY")
+    @Column(name = "TOTAL", columnDefinition = "DECIMAL(12,2)")
     private int total;
 
     @Nullable
