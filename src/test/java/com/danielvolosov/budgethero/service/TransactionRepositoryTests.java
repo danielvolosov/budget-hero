@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 public class TransactionRepositoryTests {
@@ -33,19 +35,65 @@ public class TransactionRepositoryTests {
     }
 
     @Test
-    @DisplayName("Test for save/update transaction")
-    public void givenTransactionObject_whenUpdate_thenReturnUpdatedTransaction() {
+    @DisplayName("Test for create transaction")
+    public void givenTransactionObject_whenCreate_thenReturnCreatedTransaction() {
 
         // given
         Transaction currentTransaction = new Transaction(1, new BigDecimal(799.99), "Ordered a box of oranges", new Date(), new Category());
 
         // when
-        Transaction updatedTransaction = _transactionRepository.save(currentTransaction);
+        Transaction createdTransaction = _transactionRepository.save(currentTransaction);
 
         // then
-        assertThat(updatedTransaction).isNotNull();
-        assertThat(updatedTransaction.getTransactionId()).isGreaterThan(0);
+        assertThat(createdTransaction).isNotNull();
+        assertThat(createdTransaction.getTransactionId()).isGreaterThan(0);
     }
 
+    @Test
+    @DisplayName("Test for create multiple transaction")
+    public void givenMultipleTransactionObjects_whenCreate_thenReturnCreatedTransactions() {
 
+        // given
+        Transaction transaction1 = new Transaction(1, new BigDecimal(799.99), "Ordered a box of oranges", new Date(), new Category());
+        Transaction transaction2 = new Transaction(2, new BigDecimal(899.99), "Ordered a box of apples", new Date(), new Category());
+        Transaction transaction3 = new Transaction(3, new BigDecimal(999.99), "Ordered a box of grapes", new Date(), new Category());
+
+        List<Transaction> transactionList = new ArrayList<>();
+        transactionList.add(transaction1);
+        transactionList.add(transaction2);
+        transactionList.add(transaction3);
+
+        // when
+        List<Transaction> createdTransactions = _transactionRepository.saveAll(transactionList);
+
+        // then
+        assertThat(createdTransactions).isNotNull();
+        assertThat(createdTransactions.size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("Test for get transaction by id")
+    public void givenTransactionId_whenGetById_thenReturnTransaction() {
+
+        // given
+        Transaction existingTransaction = new Transaction(1, new BigDecimal(799.99), "Ordered a box of oranges", new Date(), new Category());
+
+        // when
+        Optional retrievedTransaction = _transactionRepository.findById(1);
+
+        // then
+        assertThat(retrievedTransaction).isNotNull();
+        assertThat(retrievedTransaction.isPresent());
+    }
+
+    @Test
+    @DisplayName("Test for get transaction by id when id doesn't exist")
+    public void givenTransactionIdThatDoesNotExist_whenGetById_thenFail() {
+
+        // when
+        Optional retrievedTransaction = _transactionRepository.findById(1);
+
+        // then
+        assertThat(retrievedTransaction.isPresent() == Optional.empty().isPresent());
+    }
 }
